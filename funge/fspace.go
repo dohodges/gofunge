@@ -1,4 +1,4 @@
-package gofunge
+package funge
 
 import (
 	"bytes"
@@ -54,7 +54,7 @@ func (fs *FungeSpace) Load(reader io.Reader) error {
 
 	for _, r := range bytes.Runes(b) {
 		switch r {
-		case 012,015:
+		case 012, 015:
 			if fs.funge > 1 {
 				address = address.Add(fs.funge.Delta(YAxis, Forward))
 				address.Set(XAxis, 0)

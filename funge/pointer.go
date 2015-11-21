@@ -1,4 +1,4 @@
-package gofunge
+package funge
 
 type Pointer struct {
 	funge   Funge

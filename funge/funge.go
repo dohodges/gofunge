@@ -1,4 +1,4 @@
-package gofunge
+package funge
 
 import (
 	"math/rand"

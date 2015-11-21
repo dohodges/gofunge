@@ -1,4 +1,4 @@
-package gofunge
+package funge
 
 type Matrix struct {
 	rows int
@@ -44,7 +44,6 @@ func (m *Matrix) Get(row, column int) int32 {
 func (m *Matrix) Set(row, column int, value int32) {
 	m.data[row][column] = value
 }
-
 
 func (m *Matrix) Add(o *Matrix) *Matrix {
 	if m.rows != o.rows || m.cols != o.cols {

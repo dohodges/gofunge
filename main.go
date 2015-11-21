@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dohodges/gofunge/gofunge"
+	"github.com/dohodges/gofunge/funge"
 	"log"
 	"os"
 )
@@ -17,7 +17,7 @@ func main() {
 	}
 	defer programFile.Close()
 
-	vm := gofunge.NewVirtualMachine(gofunge.Befunge)
+	vm := funge.NewVirtualMachine(funge.Befunge)
 	if err = vm.LoadProgram(programFile); err != nil {
 		log.Fatal(err)
 	}
