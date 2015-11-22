@@ -1,39 +1,48 @@
 package funge
 
-import (
-	"fmt"
-)
-
 type Stack struct {
-	data []rune
+	stacks [][]rune
 }
 
 func NewStack() *Stack {
 	return &Stack{
-		data: make([]rune, 0),
+		stacks: make([][]rune, 1),
 	}
 }
 
 func (s *Stack) Depth() int {
-	return len(s.data)
+	return len(s.topOfStackStack())
 }
 
 func (s *Stack) Push(value rune) {
-	s.data = append(s.data, value)
+	s.setTopOfStackStack(append(s.topOfStackStack(), value))
 }
 
-func (s *Stack) Pop() (rune, error) {
+func (s *Stack) Pop() rune {
 	depth := s.Depth()
 	if depth == 0 {
-		return 0, fmt.Errorf("befungo.Stack: empty")
+		return 0
 	}
 
-	value := s.data[depth-1]
-	s.data = s.data[:depth-1]
+	toss := s.topOfStackStack()
+	value := toss[depth-1]
+	s.setTopOfStackStack(toss[:depth-1])
 
-	return value, nil
+	return value
 }
 
 func (s *Stack) Clear() {
-	s.data = make([]rune, 0)
+	s.setTopOfStackStack(make([]rune, 0))
+}
+
+func (s *Stack) topOfStack() int {
+	return len(s.stacks) - 1
+}
+
+func (s *Stack) topOfStackStack() []rune {
+	return s.stacks[s.topOfStack()]
+}
+
+func (s *Stack) setTopOfStackStack(stack []rune) {
+	s.stacks[s.topOfStack()] = stack
 }

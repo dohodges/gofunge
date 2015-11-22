@@ -61,10 +61,7 @@ func (vm *VirtualMachine) cycle() error {
 	case '?':
 		vm.ip.Away()
 	case '.':
-		value, err := vm.stack.Pop()
-		if err != nil {
-			return err
-		}
+		value := vm.stack.Pop()
 		fmt.Print(value)
 	default:
 	}
