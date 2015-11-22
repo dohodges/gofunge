@@ -14,8 +14,10 @@ func (s *Stack) Depth() int {
 	return len(s.topOfStackStack())
 }
 
-func (s *Stack) Push(value rune) {
-	s.setTopOfStackStack(append(s.topOfStackStack(), value))
+func (s *Stack) Push(values ...rune) {
+	for _, value := range values {
+		s.setTopOfStackStack(append(s.topOfStackStack(), value))
+	}
 }
 
 func (s *Stack) Pop() rune {

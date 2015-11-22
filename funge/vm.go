@@ -33,10 +33,10 @@ func (vm *VirtualMachine) LoadProgram(reader io.Reader) error {
 
 func (vm *VirtualMachine) Run() error {
 
-	fmt.Println(vm.fspace)
-
 	for {
-		if err := vm.cycle(); err != nil {
+		if err := vm.step(); err == io.EOF {
+			return nil
+		} else if err != nil {
 			return err
 		}
 	}
@@ -44,12 +44,31 @@ func (vm *VirtualMachine) Run() error {
 	return nil
 }
 
-func (vm *VirtualMachine) cycle() error {
+func (vm *VirtualMachine) step() error {
 	instr := vm.fetch()
 
 	switch instr {
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		vm.stack.Push(instr)
+		vm.stack.Push(instr - 48)
+	case '+':
+		a, b := vm.stack.Pop(), vm.stack.Pop()
+		vm.stack.Push(a + b)
+	case '-':
+		a, b := vm.stack.Pop(), vm.stack.Pop()
+		vm.stack.Push(b - a)
+	case '*':
+		a, b := vm.stack.Pop(), vm.stack.Pop()
+		vm.stack.Push(a * b)
+	case '/':
+		a, b := vm.stack.Pop(), vm.stack.Pop()
+		if a == 0 {
+			vm.stack.Push(0) // 93-rule: if a is zero, ask the user what result they want
+		} else {
+			vm.stack.Push(b / a)
+		}
+	case '%':
+		a, b := vm.stack.Pop(), vm.stack.Pop()
+		vm.stack.Push(b % a)
 	case '^':
 		vm.ip.North()
 	case '>':
@@ -60,9 +79,28 @@ func (vm *VirtualMachine) cycle() error {
 		vm.ip.West()
 	case '?':
 		vm.ip.Away()
+	case '"':
+		vm.ip.Next(1)
+		for v := vm.fetch(); v != '"'; v = vm.fetch() {
+			vm.stack.Push(v)
+			vm.ip.Next(1)
+		}
+	case ':':
+		a := vm.stack.Pop()
+		vm.stack.Push(a, a)
+	case '\\':
+		a, b := vm.stack.Pop(), vm.stack.Pop()
+		vm.stack.Push(a, b)
+	case '$':
+		vm.stack.Pop()
 	case '.':
 		value := vm.stack.Pop()
 		fmt.Print(value)
+	case ',':
+		value := vm.stack.Pop()
+		fmt.Print(string(value))
+	case '@':
+		return io.EOF
 	default:
 	}
 	vm.ip.Next(1)
