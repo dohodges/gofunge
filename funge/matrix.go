@@ -61,12 +61,24 @@ func (m *Matrix) Add(o *Matrix) *Matrix {
 	return sum
 }
 
+func (m *Matrix) Scale(scalar int32) *Matrix {
+	scaled := NewMatrix(m.rows, m.cols)
+
+	for r := 0; r < m.rows; r++ {
+		for c := 0; c < m.cols; c++ {
+			scaled.data[r][c] = scalar * m.data[r][c]
+		}
+	}
+
+	return scaled
+}
+
 func (m *Matrix) Multiply(o *Matrix) *Matrix {
 	if m.cols != o.rows {
 		panic("gofunge.Matrix: cannot multiply matrices of inequal columns/rows")
 	}
 
-	product := NewMatrix(m.rows, m.cols)
+	product := NewMatrix(m.rows, o.cols)
 
 	for r := 0; r < m.rows; r++ {
 		for c := 0; c < o.cols; c++ {
@@ -102,6 +114,11 @@ func (v Vector) Set(axis Axis, value int32) {
 func (v Vector) Add(w Vector) Vector {
 	sum := v.Matrix.Add(w.Matrix)
 	return Vector{sum}
+}
+
+func (v Vector) Scale(scalar int32) Vector {
+	scaled := v.Matrix.Scale(scalar)
+	return Vector{scaled}
 }
 
 func (v Vector) Transform(transform *Matrix) Vector {

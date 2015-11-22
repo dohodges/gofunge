@@ -33,14 +33,16 @@ func (p point) Vector() Vector {
 }
 
 type FungeSpace struct {
-	funge Funge
-	data  map[point]rune
+	funge  Funge
+	bounds [][2]int32
+	data   map[point]rune
 }
 
 func NewFungeSpace(funge Funge) *FungeSpace {
 	return &FungeSpace{
-		funge: funge,
-		data:  make(map[point]rune),
+		funge:  funge,
+		bounds: make([][2]int32, int(funge)),
+		data:   make(map[point]rune),
 	}
 }
 
@@ -77,6 +79,16 @@ func (fs *FungeSpace) Load(reader io.Reader) error {
 	return nil
 }
 
+func (fs *FungeSpace) InBounds(address Vector) bool {
+	for _, axis := range fs.funge.Axes() {
+		position := address.Get(axis)
+		if position < fs.bounds[axis][0] || position > fs.bounds[axis][1] {
+			return false
+		}
+	}
+	return true
+}
+
 func (fs *FungeSpace) Get(address Vector) rune {
 	if r, exists := fs.data[makePoint(address)]; exists {
 		return r
@@ -87,6 +99,16 @@ func (fs *FungeSpace) Get(address Vector) rune {
 
 func (fs *FungeSpace) Put(address Vector, r rune) {
 	fs.data[makePoint(address)] = r
+
+	// expand bounds
+	for _, axis := range fs.funge.Axes() {
+		position := address.Get(axis)
+		if position < fs.bounds[axis][0] {
+			fs.bounds[axis][0] = position
+		} else if position > fs.bounds[axis][1] {
+			fs.bounds[axis][1] = position
+		}
+	}
 }
 
 func (fs *FungeSpace) Clear() {

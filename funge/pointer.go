@@ -58,6 +58,10 @@ func (p *Pointer) Away() {
 	p.Go(p.funge.Delta(axis, direction))
 }
 
+func (p *Pointer) Reverse() {
+	p.delta = p.delta.Scale(-1)
+}
+
 func (p *Pointer) TurnLeft() {
 	if p.funge >= 2 {
 		p.delta = p.delta.Transform(p.funge.LeftTurnTransform())

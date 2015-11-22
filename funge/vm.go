@@ -104,10 +104,10 @@ func (vm *VirtualMachine) step() error {
 			vm.ip.North()
 		}
 	case '"':
-		vm.ip.Next()
+		vm.next()
 		for v := vm.fetch(); v != '"'; v = vm.fetch() {
 			vm.stack.Push(v)
-			vm.ip.Next()
+			vm.next()
 		}
 	case ':':
 		a := vm.stack.Pop()
@@ -124,7 +124,7 @@ func (vm *VirtualMachine) step() error {
 		value := vm.stack.Pop()
 		fmt.Printf(`%s`, string(value))
 	case '#':
-		vm.ip.Next()
+		vm.next()
 	case 'p':
 		addr := vm.popStorageAddress()
 		value := vm.stack.Pop()
@@ -137,13 +137,29 @@ func (vm *VirtualMachine) step() error {
 		return io.EOF
 	default:
 	}
-	vm.ip.Next()
+	vm.next()
 
 	return nil
 }
 
 func (vm *VirtualMachine) fetch() rune {
 	return vm.fspace.Get(vm.ip.Address())
+}
+
+func (vm *VirtualMachine) next() {
+	vm.ip.Next()
+
+	// handle wrapping
+	if !vm.fspace.InBounds(vm.ip.Address()) {
+		// reverse the ip and backtrack to the other bound
+		vm.ip.Reverse()
+		for vm.ip.Next(); vm.fspace.InBounds(vm.ip.Address()); vm.ip.Next() {
+		}
+
+		// reverse again and proceed
+		vm.ip.Reverse()
+		vm.ip.Next()
+	}
 }
 
 func (vm *VirtualMachine) popStorageAddress() Vector {

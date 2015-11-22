@@ -38,6 +38,15 @@ func (f Funge) OriginDelta() Vector {
 	return f.Delta(XAxis, Forward)
 }
 
+func (f Funge) Axes() []Axis {
+	axes := make([]Axis, int(f))
+	for i := range axes {
+		axes[i] = Axis(i)
+	}
+
+	return axes
+}
+
 func (f Funge) Delta(axis Axis, direction Direction) Vector {
 	delta := NewVector(int(f))
 	if direction == Forward {
