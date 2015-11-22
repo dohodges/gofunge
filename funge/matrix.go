@@ -92,11 +92,11 @@ func (v Vector) Size() int {
 }
 
 func (v Vector) Get(axis Axis) int32 {
-	return v.Matrix.Get(int(axis), 1)
+	return v.Matrix.Get(int(axis), 0)
 }
 
 func (v Vector) Set(axis Axis, value int32) {
-	v.Matrix.Set(int(axis), 1, value)
+	v.Matrix.Set(int(axis), 0, value)
 }
 
 func (v Vector) Add(w Vector) Vector {
