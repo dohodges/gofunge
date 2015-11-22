@@ -79,6 +79,18 @@ func (vm *VirtualMachine) step() error {
 		vm.ip.West()
 	case '?':
 		vm.ip.Away()
+	case '_':
+		if a := vm.stack.Pop(); a == 0 {
+			vm.ip.East()
+		} else {
+			vm.ip.West()
+		}
+	case '|':
+		if a := vm.stack.Pop(); a == 0 {
+			vm.ip.South()
+		} else {
+			vm.ip.North()
+		}
 	case '"':
 		vm.ip.Next(1)
 		for v := vm.fetch(); v != '"'; v = vm.fetch() {
