@@ -77,9 +77,12 @@ func (fs *FungeSpace) Load(reader io.Reader) error {
 	return nil
 }
 
-func (fs *FungeSpace) Get(address Vector) (rune, bool) {
-	r, exists := fs.data[makePoint(address)]
-	return r, exists
+func (fs *FungeSpace) Get(address Vector) rune {
+	if r, exists := fs.data[makePoint(address)]; exists {
+		return r
+	} else {
+		return ' '
+	}
 }
 
 func (fs *FungeSpace) Put(address Vector, r rune) {

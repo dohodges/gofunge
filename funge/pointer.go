@@ -4,6 +4,7 @@ type Pointer struct {
 	funge   Funge
 	address Vector
 	delta   Vector
+	offset  Vector
 }
 
 func NewPointer(funge Funge) *Pointer {
@@ -11,11 +12,16 @@ func NewPointer(funge Funge) *Pointer {
 		funge:   funge,
 		address: funge.Origin(),
 		delta:   funge.OriginDelta(),
+		offset:  funge.Origin(),
 	}
 }
 
 func (p *Pointer) Address() Vector {
 	return p.address
+}
+
+func (p *Pointer) StorageOffset() Vector {
+	return p.offset
 }
 
 func (p *Pointer) Delta() Vector {

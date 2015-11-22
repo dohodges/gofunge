@@ -1,11 +1,13 @@
 package funge
 
 type Stack struct {
+	funge  Funge
 	stacks [][]rune
 }
 
-func NewStack() *Stack {
+func NewStack(funge Funge) *Stack {
 	return &Stack{
+		funge:  funge,
 		stacks: make([][]rune, 1),
 	}
 }
@@ -31,6 +33,16 @@ func (s *Stack) Pop() rune {
 	s.setTopOfStackStack(toss[:depth-1])
 
 	return value
+}
+
+func (s *Stack) PopVector() Vector {
+	vector := NewVector(int(s.funge))
+	for axis := Axis(s.funge - 1); axis >= XAxis; axis-- {
+		value := int32(s.Pop())
+		vector.Set(axis, value)
+	}
+
+	return vector
 }
 
 func (s *Stack) Clear() {

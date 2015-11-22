@@ -16,7 +16,7 @@ func NewVirtualMachine(funge Funge) *VirtualMachine {
 	return &VirtualMachine{
 		funge:  funge,
 		fspace: NewFungeSpace(funge),
-		stack:  NewStack(),
+		stack:  NewStack(funge),
 		ip:     NewPointer(funge),
 	}
 }
@@ -125,6 +125,14 @@ func (vm *VirtualMachine) step() error {
 		fmt.Printf(`%s`, string(value))
 	case '#':
 		vm.ip.Next()
+	case 'p':
+		addr := vm.popStorageAddress()
+		value := vm.stack.Pop()
+		vm.fspace.Put(addr, value)
+	case 'g':
+		addr := vm.popStorageAddress()
+		value := vm.fspace.Get(addr)
+		vm.stack.Push(value)
 	case '@':
 		return io.EOF
 	default:
@@ -135,9 +143,10 @@ func (vm *VirtualMachine) step() error {
 }
 
 func (vm *VirtualMachine) fetch() rune {
-	if instr, ok := vm.fspace.Get(vm.ip.Address()); ok {
-		return instr
-	} else {
-		return ' '
-	}
+	return vm.fspace.Get(vm.ip.Address())
+}
+
+func (vm *VirtualMachine) popStorageAddress() Vector {
+	addr := vm.stack.PopVector()
+	return addr.Add(vm.ip.StorageOffset())
 }
