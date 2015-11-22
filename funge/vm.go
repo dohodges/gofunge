@@ -69,6 +69,18 @@ func (vm *VirtualMachine) step() error {
 	case '%':
 		a, b := vm.stack.Pop(), vm.stack.Pop()
 		vm.stack.Push(b % a)
+	case '!':
+		if a := vm.stack.Pop(); a == 0 {
+			vm.stack.Push(1)
+		} else {
+			vm.stack.Push(0)
+		}
+	case '`':
+		if a, b := vm.stack.Pop(), vm.stack.Pop(); b > a {
+			vm.stack.Push(1)
+		} else {
+			vm.stack.Push(0)
+		}
 	case '^':
 		vm.ip.North()
 	case '>':
@@ -92,10 +104,10 @@ func (vm *VirtualMachine) step() error {
 			vm.ip.North()
 		}
 	case '"':
-		vm.ip.Next(1)
+		vm.ip.Next()
 		for v := vm.fetch(); v != '"'; v = vm.fetch() {
 			vm.stack.Push(v)
-			vm.ip.Next(1)
+			vm.ip.Next()
 		}
 	case ':':
 		a := vm.stack.Pop()
@@ -107,15 +119,17 @@ func (vm *VirtualMachine) step() error {
 		vm.stack.Pop()
 	case '.':
 		value := vm.stack.Pop()
-		fmt.Print(value)
+		fmt.Printf(`%d `, value)
 	case ',':
 		value := vm.stack.Pop()
-		fmt.Print(string(value))
+		fmt.Printf(`%s`, string(value))
+	case '#':
+		vm.ip.Next()
 	case '@':
 		return io.EOF
 	default:
 	}
-	vm.ip.Next(1)
+	vm.ip.Next()
 
 	return nil
 }

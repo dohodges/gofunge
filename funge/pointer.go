@@ -68,8 +68,6 @@ func (p *Pointer) Go(delta Vector) {
 	p.delta = delta
 }
 
-func (p *Pointer) Next(steps int) {
-	for s := 0; s < steps; s++ {
-		p.address = p.address.Add(p.delta)
-	}
+func (p *Pointer) Next() {
+	p.address = p.address.Add(p.delta)
 }
