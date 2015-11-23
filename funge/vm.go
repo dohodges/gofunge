@@ -1,7 +1,6 @@
 package funge
 
 import (
-	"fmt"
 	"io"
 )
 
@@ -10,6 +9,7 @@ type VirtualMachine struct {
 	fspace *FungeSpace
 	stack  *Stack
 	ip     *Pointer
+	term   *Terminal
 }
 
 func NewVirtualMachine(funge Funge) *VirtualMachine {
@@ -18,6 +18,7 @@ func NewVirtualMachine(funge Funge) *VirtualMachine {
 		fspace: NewFungeSpace(funge),
 		stack:  NewStack(funge),
 		ip:     NewPointer(funge),
+		term:   NewTerminal(),
 	}
 }
 
@@ -118,11 +119,9 @@ func (vm *VirtualMachine) step() error {
 	case '$':
 		vm.stack.Pop()
 	case '.':
-		value := vm.stack.Pop()
-		fmt.Printf(`%d `, value)
+		vm.term.OutputDecimal(vm.stack.Pop())
 	case ',':
-		value := vm.stack.Pop()
-		fmt.Printf(`%s`, string(value))
+		vm.term.OutputCharacter(vm.stack.Pop())
 	case '#':
 		vm.next()
 	case 'p':
@@ -133,6 +132,12 @@ func (vm *VirtualMachine) step() error {
 		addr := vm.popStorageAddress()
 		value := vm.fspace.Get(addr)
 		vm.stack.Push(value)
+	case '&':
+		d := vm.term.InputDecimal()
+		vm.stack.Push(d)
+	case '~':
+		c := vm.term.InputCharacter()
+		vm.stack.Push(c)
 	case '@':
 		return io.EOF
 	default:
